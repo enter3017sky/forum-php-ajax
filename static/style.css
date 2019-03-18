@@ -1,0 +1,274 @@
+body {
+    background: #91989F;
+    margin: 0px;
+    padding: 0;
+    font-size: 1rem;
+}
+
+.nav {
+    position: fixed;
+    top: 0; /* position設定之後，沒設top或其他，container 用margin-top，會跑掉。 */
+    background: #787878;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+.nav__list {
+    list-style: none;
+    padding: 0 30px;
+    display: flex;
+}
+.nav__item + .nav__item {
+    margin-left: 10px;
+}
+
+.nav__item a {
+    text-decoration: none;
+    color: white;
+    padding: 5px 10px;
+    border: 1px solid #BDC0BA;
+    border-radius: 5px ;
+    background: #717070;
+    box-shadow: 1px 1px 5px 1px rgba(0, 0, 0, 0.9); 
+}
+.nav__item a:hover {
+    /* 調節圖片的亮度 */
+    filter: brightness(1.2);
+}
+.bottom__footer {
+    position: fixed;
+    bottom: 0;
+    display: flex;
+    width: 100%;
+    /* justify-content: center; */
+    /* align-content: center; */
+    height: 50px;
+}
+
+/* Bootstrap 預設的 ul margin-top:0 ; margin-bottom: 1rem ;導致底部頁數不能置中 */
+.footer__ul {
+    margin: auto; 
+}
+.submit__btn, .LR__btn {
+    padding: 5px 25px;
+}
+
+textarea.content {
+    margin: 0 20px;
+    width: 90%;
+}
+.alert-light {
+    padding: 0;
+    border-color: #888;
+}
+.alert-dark {
+    background: #D6D9DC;
+    border-color: #787878;
+    padding: 0;
+    color: black;
+}
+
+.alert__box {
+    margin: 20px;
+}
+
+/* 分隔線,以上為 Bootstrap */
+
+/* 底部的 */
+.page_bar {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    box-sizing: border-box;
+    list-style: none;
+    padding-inline-start: 0;
+    margin: 5px;
+}
+
+.page_bar  a {
+    text-decoration: none;
+    color: white;
+    padding: 0px 10px;
+    border: 1px solid #BDC0BA;
+    border-radius: 5px ;
+    background: #717070;
+    margin: 0 10px;
+    box-shadow: 1px 1px 5px 1px rgba(0, 0, 0, 0.9); 
+}
+
+.meg__page + .meg__page {
+    margin-left: 1.5rem;
+}
+
+.container {
+    /* position: relative;
+    top: 54px; */
+    margin-top: 54px; 
+    padding: 20px 30px 0;
+    /* margin: 0 auto; */
+}
+
+
+.wrapper__form {
+    max-width: 700px;
+    background: gray;
+    margin: 0 auto;
+
+    /* font-size: 18px; */
+}
+
+.register__form {
+    text-align: center;
+    max-width: 400px;
+    margin: 2rem auto;
+    border: 1px solid #D6D9DC;
+    border-radius: 5px;
+    background-color: rgb(191, 191, 191);
+}
+
+.form-row {
+    margin: 20px 0;
+    justify-content: center;
+    font-size: 18px;
+}
+
+.comments__wrapper {
+    max-width: 700px;
+    margin: 20px auto;
+    border-radius: 5px;
+    background-color: rgb(191, 191, 191);
+}
+.meg__wrap {
+    max-width: 700px;
+    margin: 0 auto 10px;
+    border: 1px solid #D6D9DC;
+    border-radius: 5px;
+    background-color: rgb(191, 191, 191);
+}
+.sub-meg__wrap {
+    background-color: rgb(180,180,180);
+    margin: 0 8px;
+}
+
+.sub-meg__user {
+    margin: 0 8px;
+}
+
+.comment__header {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    text-align: center;
+}
+.comment__header__left {
+    display: flex;
+}
+.comment__header__right {
+    display: flex;
+}
+
+    /* 登入時顯示暱稱 */
+.user__nick {
+    font-size: 1.5rem;
+}
+
+
+/* 主留言：作者、時間戳 */
+.comment__author,
+.comment__timestamp {
+    padding: 8px 4px;
+}
+
+
+/* 子留言：作者、時間戳 */
+.sub-comment__author,
+.sub-comment__timestamp {
+    padding: 8px 4px;
+}
+.filler {
+    margin-top: 60px;
+}
+.hide {
+    display: none;
+}
+.comment__content {
+    text-align: start;
+    border-radius: 5px;
+    margin: 20px 20px;
+    word-break: break-all; 
+}
+.sub-comment__content {
+    text-align: start;
+    border-radius: 5px;
+    word-break: break-all; 
+}
+
+textarea {
+    font-family: "Helvetica", "Arial", sans-serif;
+    font-size: 14px;
+    border: 3px solid #D6D9DC;
+    border-radius: 5px;
+    width: 90%;
+    min-height: 120px;
+    resize: none;
+  }
+
+/* 包覆留言submit 按鈕的 div */
+.sub__btn {
+    display: flex;
+    justify-content: flex-end;
+    width: 90%;
+    margin: 0 auto;
+}
+
+
+/* ios 裝置 input */
+input {
+    -webkit-appearance: none; 
+}
+
+@media only screen and (min-width: 601px) {
+    .comment__timestamp,
+    .sub-comment__timestamp {
+        margin-left: 5px;
+    }
+    .edit__btn {
+        margin-left: 5px;
+    }
+    .form-inline {
+        display: block;
+    }
+}
+
+/* Bootstrap 修改 */
+@media only screen and (max-width: 577px) {
+    .submit__btn {
+        width: 100%;
+    }
+    .LR__btn {
+        width: 88%;
+    }
+    label {
+        /* display: block; */
+        width: 88%;
+    }
+    .nav {
+        background: none;
+    }
+    .bottom__footer {
+        background: none;
+    }
+
+}
+@media only screen and (max-width: 500px) {
+    .comment__header__left,
+    .comment__header__right {
+        display: flex;
+        flex-direction: column;
+    }
+    .submit__btn {
+        width: 100%;
+    }
+}
+
+
