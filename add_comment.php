@@ -1,6 +1,7 @@
 <?php
     include('./check_login.php');
     include('./conn.php');
+    include_once('./templates/Parsedown.php');
 
     try {
         if (isset($_POST['content']) && !empty($_POST['content'])) {
@@ -16,21 +17,37 @@
             $stmt->bind_param("ssi", $user, $content, $parent_id);
 
             if ($stmt->execute()) {
-                //  取得最後一筆輸入的 id
 
                 $last_id = $conn->insert_id;
-                // if($parent_id === '0'){
-                    $arr = array(
-                        'result' => 'Success',
-                        'message' => 'Successfully Added',
-                        'user' => $user,
-                        'Request_Method' => $_SERVER['REQUEST_METHOD'],
-                        'parent_id' => $parent_id,
-                        'content' => $content,
-                        'id' => $last_id,
-                        'nick' => $nick
-                    );
-                    echo json_encode($arr);
+
+                $last_comments = "SELECT content FROM enter3017sky_comments WHERE id = $last_id";
+
+                $result = $conn->query($last_comments);
+                if ($result->num_rows > 0) {
+                    $md = new Parsedown();
+                    $md->setSafeMode(true);
+                    $row = $result->fetch_assoc();
+                    $text = $md->text($row['content']);
+               
+                    try {
+                        $arr = array(
+                            'result' => 'Success',
+                            'message' => 'Successfully Added',
+                            'user' => $user,
+                            'Request_Method' => $_SERVER['REQUEST_METHOD'],
+                            'parent_id' => $parent_id,
+                            'content' => $content,
+                            'id' => $last_id,
+                            'nick' => "$nick",
+                            'markdownContent' => $text,
+                        );
+                        echo json_encode($arr);
+                    } catch (\Throwable $th) {
+                        echo $th->error;
+                    }
+
+                }
+
             } else {
                 echo json_encode(array(
                     'result' => 'Fail',

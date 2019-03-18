@@ -3,7 +3,6 @@ $(document).ready(function() {
     原本事件掛在 $('.wrapper__form') 但是這個元素本身也是動態新增的，所以新增的留言 submit edit delete 都無法執行。
     解法1：掛高高，掛在動態新增以外的那層
     解法2： https://stackoverflow.com/questions/8408826/bind-event-only-once
-
     */
 
     // 新增留言
@@ -19,9 +18,6 @@ $(document).ready(function() {
         var checkUser = $eT.parents('.comments__wrapper').find('.nick').text().trim()
         const checkSubSubmit = $eT.parents('.comments__wrapper').length
 
-        console.log('parentId ',parentId, 'getContent', getContent)
-
-
         $.ajax({
             method: 'POST',
             url: './add_comment.php',
@@ -32,23 +28,26 @@ $(document).ready(function() {
 
         }).done(function(response) {
             var resp = JSON.parse(response);
+            var content = resp.markdownContent
             var id = resp.id
 
             if(resp.result === 'Success') { // server 成功才執行
                 if(parentId === '0' && !checkSubSubmit) { // 檢查 id 及 判斷 submit
                     clearContent
-                    $eT.parents('.wrapper__form').after(createMainComment(showNickname, getContent, id)) // 產生留言框
+                    $eT.parents('.wrapper__form').after(createMainComment(showNickname, content, id)) // 產生留言框
                     $('.wrapper__form + .comments__wrapper').hide().show(500) // 取得產生的留言框，先隱藏在秀出
-
                     console.log('新增 主留言 成功')
+                    Prism.highlightAll();
                 } else if(showNickname === checkUser) { // 判斷主留言與子留言是否使用者相同
                     clearContent
                     // 點擊提交時找到最上層的 .wrapper__form，的前面(.before)的前一個兄弟元素(.prev())建立留言
-                    $eT.parents('.wrapper__form').before(createSubComment(showNickname, getContent, id)).prev().hide().show(500)
+                    $eT.parents('.wrapper__form').before(createSubComment(showNickname, content, id)).prev().hide().show(500)
                     console.log('新增 在自己主留言底下新增子留言')
+                    Prism.highlightAll();
                 } else {
                     clearContent
-                    $eT.parents('.wrapper__form').before(createSubComment(showNickname, getContent, id, false)).prev().hide().show(500)
+                    $eT.parents('.wrapper__form').before(createSubComment(showNickname, content, id, false)).prev().hide().show(500)
+                    Prism.highlightAll();
                 }
             } else {
                 return
@@ -70,36 +69,55 @@ $(document).ready(function() {
         const createMsgTarget = $eT.parents('.meg__wrap').contents('.comment__header')  // 建立主留言的位置定位
         var checkOnlyMsg = $eT.parents('.meg__wrap').contents('.sub-meg__user').length // 判斷是否只有主留言
 
-        if(!checkEditing) {  // 檢查是否正在編輯
-            if(checkSubEdit.length) { // 子留言編輯
-                $eT.addClass('alert-success')
-                content = editSubText.text().trim()
-                editSubText.hide(400, function() {
-                    $(this).remove();
-                })
-                editSubBox(checkSubEdit, content, editId)
-                console.log('編輯 子留言')
-            } else if(!checkSubEdit.length && checkMainEdit) {
-                if(!checkOnlyMsg) { // 0 的話是只有單一主留言的編輯
-                    $eT.parents('.meg__wrap').find('.wrapper__form').hide(350)
-                    content = editText.text().trim();
-                    editText.hide(350, function() {
+        console.log('editId', editId)
+
+
+        $.ajax({
+            method: 'POST',
+            url: './getEditContent.php',
+            data: {
+                id: editId
+            }
+        }).done(function(response) {
+            var res = JSON.parse(response)
+            var originContent = res.originContent
+
+            if(!checkEditing) {  // 檢查是否正在編輯
+                if(checkSubEdit.length) { // 子留言編輯
+                    $eT.addClass('alert-success')
+                    // content = editSubText.text().trim()
+                    editSubText.hide(400, function() {
                         $(this).remove();
                     })
-                    editMainBox(createMsgTarget, content, editId)
-                    console.log('編輯 單一主留言')
-                } else {
-                    content = editText.text().trim()
-                    editText.hide(400, function() {
-                        $(this).remove();
-                    })
-                    editMainBox(createMsgTarget, content, editId);
-                    console.log('編輯 主留言')
-                }
-            };
-        } else {
-            return
-        }
+                    editSubBox(checkSubEdit, originContent, editId)
+                    console.log('編輯 子留言')
+                } else if(!checkSubEdit.length && checkMainEdit) {
+                    if(!checkOnlyMsg) { // 0 的話是只有單一主留言的編輯
+                        $eT.parents('.meg__wrap').find('.wrapper__form').hide(350)
+                        // content = editText.text().trim();
+                        editText.hide(350, function() {
+                            $(this).remove();
+                        })
+                        editMainBox(createMsgTarget, originContent, editId)
+                        console.log('編輯 單一主留言')
+                    } else {
+                        // content = editText.text().trim()
+                        editText.hide(400, function() {
+                            $(this).remove();
+                        })
+                        editMainBox(createMsgTarget, originContent, editId);
+                        console.log('編輯 主留言')
+                    }
+                };
+            } else {
+                return
+            }
+
+        }).fail(function(response) {
+            var res = JSON.parse(response)
+            console.log('res.message: ', res.message)
+        })
+
     });
 
     // 送出編輯完成的留言
@@ -112,6 +130,8 @@ $(document).ready(function() {
         const checkOnlyMsg = $eT.parents('.meg__wrap').find('.wrapper__form:hidden') // 取得只有主留言而隱藏的留言框
         const checkSubEdit = $eT.parents('.sub-meg__user').parents('.meg__wrap').length // 判斷是否為子留言的編輯
 
+        console.log('編輯完成！')
+
         if(content) { // 如果留言不為空
             $.ajax({
                 method: 'POST',
@@ -122,18 +142,22 @@ $(document).ready(function() {
                 }
             }).done(function(response) {
                 var res = JSON.parse(response)
+                var markdownContent = res.content
                 alert(res.message)
                     // 本來兩個 if 再一起，應該以流程為主，成功才執行動畫，這樣動態效果才好
                 if(checkSubEdit) { // 判斷是否為子留言的編輯
-                    editDoneAndSubmit($eT, content, 0)
+                    editDoneAndSubmit($eT, markdownContent, 0)
                     console.log('編輯完成 子留言')
+                    Prism.highlightAll();
                 } else if(checkOnlyMsg.length) { // 單一主留言的情況
                     checkOnlyMsg.show(350) // 單主留言：秀出隱藏起來留言區塊
-                    editDoneAndSubmit($eT, content)
+                    editDoneAndSubmit($eT, markdownContent)
                     console.log('編輯完成 單一主留言')
+                    Prism.highlightAll();
                 } else { // 主留言底下有子留言的情況
-                    editDoneAndSubmit($eT, content)
+                    editDoneAndSubmit($eT, markdownContent)
                     console.log('編輯完成 主留言')
+                    Prism.highlightAll();
                 }
             }).fail(function(response) {
                 var res = JSON.parse(response)
@@ -201,9 +225,7 @@ $(document).ready(function() {
                 </div>
             </div>
             <div class="comment__content ">
-                <p>
-                    ${getContent}
-                </p>
+                ${getContent}
             </div>
                 <div class="wrapper__form rounded-bottom w-100">
                     <form class="meg__form createSubMsg" method="POST" action="./add_comment.php">
@@ -241,9 +263,7 @@ $(document).ready(function() {
                         </div>
                     </div>
                     <div class="sub-comment__content card-body">
-                        <p>
-                            ${getContent}
-                        </p>
+                        ${getContent}
                     </div>
                 </div>`;
         } else {
@@ -262,9 +282,7 @@ $(document).ready(function() {
                     </div>
                 </div>
                 <div class="sub-comment__content card-body">
-                    <p>
-                        ${getContent}
-                    </p>
+                    ${getContent}
                 </div>
             </div>`;
         }

@@ -49,8 +49,7 @@
                 ON comments.username = users.username 
                 WHERE comments.parent_id = 0
                 ORDER BY comments.id DESC
-                LIMIT ?, ?
-                ";
+                LIMIT ?, ?";
 
             $stmt = $conn->prepare($sql_comments);
             $stmt->bind_param("ii", $start, $size);
@@ -149,7 +148,7 @@
                             }
                         ?>
 
-                <div class="wrapper__form rounded-bottom w-100">
+                <div class="wrapper__form w-100">
                     <form class="meg__form createSubMsg" method="POST" action="./add_comment.php">
                         <input type="hidden" class="hidden" name="parent_id" value="<?= $parent_id; ?>">
                         <input type="hidden" class="hidden" name="nickname" value="<?php if(isset($nick)) echo $nick; ?>" /><!-- 如果有使用者(登入)的話，才印出 -->
@@ -164,7 +163,7 @@
                                 </div>
                             <?php } else { ?>
                                 <div class="alert alert-danger mb-0" role="alert">
-                                    請註冊或登入！
+                                    請<a href='./register.php' class='alert-link'>註冊</a>或<a href='./login.php' class='alert-link '>登入</a>！
                                 </div>
                             <?php }?>
 

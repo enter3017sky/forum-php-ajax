@@ -1,13 +1,9 @@
 <?php
-    // 登入的提示訊息都做在同一個頁面上了，這個就不需要了
-    // 使用者在 register.php 輸入的 username 
-    // 用這個 $_POST['username']可以取得資料
 
-    // 1. 產生session id 並放到 cookie
     session_start(); // 啟用 PHP 內建的 session
 
     require_once('./conn.php');
-    require_once('./utils.php');
+    require_once('./templates/utils.php');
 
     if (
         isset($_POST['username']) && 
